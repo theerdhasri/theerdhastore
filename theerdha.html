@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheerdhaStore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* General body and typography styles for a futuristic aesthetic */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header and navigation styling with a neon glow */
+        header {
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #333;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #00f0ff;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .header-icon {
+            cursor: pointer;
+            position: relative;
+            font-size: 1.8rem;
+            color: #e0e0e0;
+            transition: color 0.3s ease;
+        }
+
+        .header-icon:hover {
+            color: #00f0ff;
+            text-shadow: 0 0 5px #00f0ff;
+        }
+
+        .cart-count, .wishlist-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ff007f;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Main content container */
+        .container {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+        }
+        
+        /* Category Section Styling */
+        .category-section {
+            margin-bottom: 4rem;
+        }
+
+        .category-section h2 {
+            font-size: 2.5rem;
+            color: #e0e0e0;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Product grid layout */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        /* Styling for individual product cards with a glowing effect */
+        .product-card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: 0 0 5px #333;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 15px #00f0ff;
+            border-color: #00f0ff;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-bottom: 1px solid #333;
+            cursor: pointer; /* Added cursor to indicate clickability */
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-info h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .product-info p {
+            margin: 0 0 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00f0ff;
+        }
+
+        .product-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .product-actions button {
+            width: 100%;
+        }
+        
+        .add-to-cart-btn, .buy-now-btn {
+            color: #fff;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .add-to-cart-btn {
+            background-color: #00f0ff;
+            color: #121212;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #40f3ff;
+            transform: scale(1.02);
+        }
+        
+        .buy-now-btn {
+            background-color: #ff007f;
+            color: #fff;
+        }
+        
+        .buy-now-btn:hover {
+            background-color: #ff409f;
+            transform: scale(1.02);
+        }
+        
+        .wishlist-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #888;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        
+        .wishlist-btn.active {
+            color: #ff007f;
+            text-shadow: 0 0 5px #ff007f;
+        }
+        
+        .wishlist-btn:hover {
+            transform: scale(1.2);
+        }
+
+        /* Modal styling (general) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,240,255,0.2);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #e0e0e0;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #ff007f;
+        }
+
+        .modal-items li {
+            list-style: none;
+            padding: 1rem 0;
+            border-bottom: 1px solid #333;
+            font-size: 1.1rem;
+        }
+
+        .modal-items {
+            padding: 0;
+            margin: 0;
+        }
+
+        .modal-total {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 2rem;
+            color: #00f0ff;
+        }
+
+        .checkout-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .checkout-buttons button {
+            width: 100%;
+            padding: 1.25rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .checkout-buttons button:hover {
+            transform: scale(1.02);
+        }
+
+        #cod-btn {
+            background-color: #00f0ff;
+            color: #121212;
+        }
+
+        #online-payment-btn {
+            background-color: #ff007f;
+            color: #fff;
+        }
+
+        .order-message, .wishlist-message {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #ff007f;
+        }
+
+        /* Checkout Steps Specific CSS */
+        .step {
+            display: none;
+        }
+        
+        .step.active {
+            display: block;
+        }
+
+        #proceed-btn {
+            background-color: #00f0ff;
+            color: #121212;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        #proceed-btn:hover {
+            background-color: #40f3ff;
+            transform: scale(1.02);
+        }
+        
+        /* New Product Details Modal Styling */
+        #product-details-modal .modal-content {
+            display: flex;
+            gap: 2rem;
+            max-width: 900px;
+            padding: 3rem;
+        }
+        
+        #product-details-modal img {
+            width: 50%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .product-details-info {
+            width: 50%;
+            text-align: left;
+        }
+        
+        .product-details-info h2 {
+            font-size: 2.5rem;
+            margin-top: 0;
+            text-shadow: 0 0 5px #00f0ff;
+        }
+        
+        .product-details-info .price {
+            font-size: 2rem;
+            color: #ff007f;
+            font-weight: 700;
+        }
+        
+        .product-details-info .description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ccc;
+        }
+        
+        .product-details-info .buy-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            #product-details-modal .modal-content {
+                flex-direction: column;
+                max-width: 90%;
+            }
+            
+            #product-details-modal img,
+            .product-details-info {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TheerdhaStore</h1>
+        <div class="header-icons">
+            <div class="header-icon" onclick="openWishlist()">
+                ❤️ <span class="wishlist-count">0</span>
+            </div>
+            <div class="header-icon" onclick="openCart()">
+                🛒 <span class="cart-count">0</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" id="category-container">
+        <!-- Category sections and product cards will be dynamically added here by JavaScript -->
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCart()">&times;</span>
+            <h2>Your Cart</h2>
+
+            <!-- Step 1: Cart Summary -->
+            <div id="cart-step-1" class="step active">
+                <ul id="cart-items" class="modal-items">
+                    <!-- Cart items will be added here -->
+                </ul>
+                <p id="cart-total" class="modal-total">Total: ₹0.00</p>
+                <button id="proceed-btn">Proceed to Checkout</button>
+            </div>
+
+            <!-- Step 2: Payment Options -->
+            <div id="cart-step-2" class="step">
+                <p id="payment-total" class="modal-total"></p>
+                <div id="checkout-section">
+                    <p>Choose your payment method:</p>
+                    <div class="checkout-buttons">
+                        <button id="cod-btn">Cash on Delivery</button>
+                        <button id="online-payment-btn">Online Payment</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Order Confirmation -->
+            <div id="cart-step-3" class="step">
+                <div id="order-message" class="order-message"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wishlist Modal -->
+    <div id="wishlist-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeWishlist()">&times;</span>
+            <h2>Your Wishlist</h2>
+            <ul id="wishlist-items" class="modal-items">
+                <!-- Wishlist items will be added here -->
+            </ul>
+            <div id="wishlist-message" class="wishlist-message" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <!-- New Product Details Modal -->
+    <div id="product-details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeProductDetails()">&times;</span>
+            <img id="details-image" src="" alt="Product Image">
+            <div class="product-details-info">
+                <h2 id="details-name"></h2>
+                <p class="price" id="details-price"></p>
+                <p class="description" id="details-description"></p>
+                <div class="buy-actions">
+                    <button id="details-add-to-cart" class="add-to-cart-btn">Add to Cart</button>
+                    <button id="details-buy-now" class="buy-now-btn">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- TheerdhaStore JavaScript ---
+
+        // 1. JSON Product Data with categories and descriptions
+        const products = [
+            // Electronic Devices
+            {
+                id: 1,
+                name: 'Wireless Headphones',
+                price: 999.99,
+                image: 'https://cdn.shopify.com/s/files/1/0057/8938/4802/files/Rockerz_551_ANC_Pro.347_1.jpg?v=1737546044',
+                category: 'Electronic Devices',
+                description: 'Experience crystal-clear audio with these ergonomic wireless headphones, designed for immersive sound and all-day comfort. Features include active noise cancellation and a long-lasting battery.'
+            },
+            {
+                id: 2,
+                name: 'Stylish Smartwatch',
+                price: 1200.00,
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTFTdDHXZ0G5ndNGRF-recvChKpoe2MSkS7g&s',
+                category: 'Electronic Devices',
+                description: 'A fusion of technology and style. This smartwatch tracks your fitness, monitors your health, and keeps you connected with notifications right on your wrist.'
+            },
+            {
+                id: 3,
+                name: 'Fitness Tracker',
+                price: 499.99,
+                image: 'https://images-cdn.ubuy.co.in/663835a0c8a78b31eb29c6d9-fitness-tracker-1-47-smart-watch-with.jpg',
+                category: 'Electronic Devices',
+                description: 'Stay on top of your health goals with this compact fitness tracker. It monitors your steps, heart rate, sleep patterns, and provides daily activity insights.'
+            },
+            {
+                id: 10,
+                name: 'Gaming Mouse',
+                price: 750.00,
+                image: 'https://www.coconutlife.in/cdn/shop/files/145_134.jpg?v=1719853598',
+                category: 'Electronic Devices',
+                description: 'Gain the competitive edge with this high-performance gaming mouse. Featuring customizable RGB lighting, programmable buttons, and an ultra-responsive optical sensor for precision.'
+            },
+            // Clothes
+            {
+                id: 4,
+                name: 'Men\'s T-Shirt',
+                price: 250.00,
+                image: 'https://www.jiomart.com/images/product/original/rvstqohmgm/eyebogler-teal-tshirts-men-tshirt-tshirt-for-men-tshirt-mens-tshirt-men-s-polo-neck-regular-fit-half-sleeves-colorblocked-t-shirt-product-images-rvstqohmgm-1-202504231102.jpg?im=Resize=(1000,1000)',
+                category: 'Clothes',
+                description: 'A classic, comfortable men\'s t-shirt made from breathable cotton. Perfect for casual wear or as a base layer for any outfit.'
+            },
+            {
+                id: 5,
+                name: 'Women\'s Jeans',
+                price: 850.75,
+                image: 'https://www.krausjeans.com/cdn/shop/articles/Screenshot_2024-02-20_153744_1.png?v=1708424158&width=2048',
+                category: 'Clothes',
+                description: 'Stylish and durable women\'s jeans with a perfect fit. Made from a high-quality denim blend for lasting comfort and style.'
+            },
+            {
+                id: 6,
+                name: 'Hoodie',
+                price: 600.00,
+                image: 'https://www.shutterstock.com/image-vector/gray-sportive-hoodies-copy-space-260nw-2514236121.jpg',
+                category: 'Clothes',
+                description: 'A cozy and warm hoodie for those chilly days. Features a soft fleece lining and a large front pocket for convenience.'
+            },
+            {
+                id: 11,
+                name: 'Summer Dress',
+                price: 900.00,
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXnS8CZ3AfJCTwid-Ur7-nsRcA-rlIPUTof2mO0g0mBrFiCn3hwYGbVDlwyVoRII-nl-c&usqp=CAU',
+                category: 'Clothes',
+                description: 'This lightweight and breezy summer dress is perfect for a day out. Its vibrant floral pattern and flowing design will keep you looking and feeling great.'
+            },
+            // Jewellery
+            {
+                id: 7,
+                name: 'Diamond Necklace',
+                price: 5500.00,
+                image: 'https://akshayagold.in/wp-content/uploads/2024/01/417194051_18388894837066697_4226878468301025052_n.jpg',
+                category: 'Jewellery',
+                description: 'A stunning diamond necklace that adds a touch of elegance to any special occasion. Handcrafted with precision and care for a brilliant sparkle.'
+            },
+            {
+                id: 8,
+                name: 'Gold Ring',
+                price: 3200.00,
+                image: 'https://www.ornatejewels.com/cdn/shop/files/RJR0021_2e807d11-af69-41e0-8fac-0ad5d8db77d9.jpg?v=1746606378',
+                category: 'Jewellery',
+                description: 'A timeless gold ring, perfect for everyday wear or as a thoughtful gift. Made from 18k gold for a luxurious and lasting finish.'
+            },
+            {
+                id: 9,
+                name: 'Silver Earrings',
+                price: 750.50,
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8ceG6dzDTXlTbIa3ZPqLNF2igSN9f-0SMSw&s',
+                category: 'Jewellery',
+                description: 'Elegant silver earrings with a modern design. Lightweight and comfortable, these earrings are perfect for adding a touch of sophistication to your look.'
+            },
+            {
+                id: 12,
+                name: 'Pearl Bracelet',
+                price: 2100.00,
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvQUK25zLNvYeCbMDGfmp-Pv_c9alzEaOIOQ&s',
+                category: 'Jewellery',
+                description: 'A delicate and beautiful pearl bracelet featuring genuine freshwater pearls. A classic accessory that never goes out of style.'
+            }
+        ];
+
+        // 2. DOM Element References
+        const categoryContainer = document.getElementById('category-container');
+        const cartModal = document.getElementById('cart-modal');
+        const wishlistModal = document.getElementById('wishlist-modal');
+        const productDetailsModal = document.getElementById('product-details-modal');
+        const cartItemsList = document.getElementById('cart-items');
+        const wishlistItemsList = document.getElementById('wishlist-items');
+        const cartTotalDisplay = document.getElementById('cart-total');
+        const paymentTotalDisplay = document.getElementById('payment-total');
+        const cartCountDisplay = document.querySelector('.cart-count');
+        const wishlistCountDisplay = document.querySelector('.wishlist-count');
+        const proceedBtn = document.getElementById('proceed-btn');
+        const codBtn = document.getElementById('cod-btn');
+        const onlinePaymentBtn = document.getElementById('online-payment-btn');
+        const orderMessageDiv = document.getElementById('order-message');
+        const wishlistMessageDiv = document.getElementById('wishlist-message');
+        const cartStep1 = document.getElementById('cart-step-1');
+        const cartStep2 = document.getElementById('cart-step-2');
+        const cartStep3 = document.getElementById('cart-step-3');
+
+        // References for the new product details modal
+        const detailsImage = document.getElementById('details-image');
+        const detailsName = document.getElementById('details-name');
+        const detailsPrice = document.getElementById('details-price');
+        const detailsDescription = document.getElementById('details-description');
+        const detailsAddToCartBtn = document.getElementById('details-add-to-cart');
+        const detailsBuyNowBtn = document.getElementById('details-buy-now');
+
+        // 3. Cart and Wishlist State Management
+        let cart = [];
+        let wishlist = [];
+
+        // 4. Function to Render Products by Category
+        function renderProducts() {
+            categoryContainer.innerHTML = ''; // Clear any existing products
+
+            // Group products by category
+            const categorizedProducts = products.reduce((acc, product) => {
+                const category = product.category;
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(product);
+                return acc;
+            }, {});
+
+            // Render each category section
+            for (const category in categorizedProducts) {
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+
+                const categoryHeading = document.createElement('h2');
+                categoryHeading.textContent = category;
+                categorySection.appendChild(categoryHeading);
+
+                const productGrid = document.createElement('div');
+                productGrid.className = 'product-grid';
+
+                categorizedProducts[category].forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    
+                    // Check if the item is in the wishlist
+                    const isWished = wishlist.includes(product.id);
+                    
+                    productCard.innerHTML = `
+                        <button class="wishlist-btn ${isWished ? 'active' : ''}" data-product-id="${product.id}">
+                            ${isWished ? '❤️' : '♡'}
+                        </button>
+                        <img src="${product.image}" alt="${product.name}" onclick="openProductDetails(${product.id})">
+                        <div class="product-info">
+                            <h3>${product.name}</h3>
+                            <p>₹${product.price.toFixed(2)}</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart-btn" data-product-id="${product.id}">Add to Cart</button>
+                                <button class="buy-now-btn" data-product-id="${product.id}">Buy Now</button>
+                            </div>
+                        </div>
+                    `;
+                    productGrid.appendChild(productCard);
+                });
+
+                categorySection.appendChild(productGrid);
+                categoryContainer.appendChild(categorySection);
+            }
+        }
+
+        // 5. Event listener for all product actions (now delegated to the main container)
+        categoryContainer.addEventListener('click', (e) => {
+            const target = e.target;
+            const productId = parseInt(target.dataset.productId);
+            const product = products.find(p => p.id === productId);
+
+            if (target.classList.contains('add-to-cart-btn')) {
+                if (product) {
+                    cart.push(product);
+                    updateCartDisplay();
+                    showMessage('Added to cart!', 'order-message');
+                }
+            } else if (target.classList.contains('buy-now-btn')) {
+                if (product) {
+                    buyNow(product);
+                }
+            } else if (target.classList.contains('wishlist-btn')) {
+                toggleWishlist(productId, target);
+            }
+        });
+        
+        // Event listener for the new modal's buttons
+        detailsAddToCartBtn.addEventListener('click', () => {
+            const productId = parseInt(detailsAddToCartBtn.dataset.productId);
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                cart.push(product);
+                updateCartDisplay();
+                showMessage('Added to cart!', 'order-message');
+            }
+        });
+
+        detailsBuyNowBtn.addEventListener('click', () => {
+            const productId = parseInt(detailsBuyNowBtn.dataset.productId);
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                buyNow(product);
+            }
+        });
+
+
+        function toggleWishlist(productId, button) {
+            const index = wishlist.indexOf(productId);
+            if (index > -1) {
+                // Already in wishlist, remove it
+                wishlist.splice(index, 1);
+                button.classList.remove('active');
+                button.innerHTML = '♡';
+                showMessage('Removed from wishlist.', 'wishlist-message');
+            } else {
+                // Not in wishlist, add it
+                wishlist.push(productId);
+                button.classList.add('active');
+                button.innerHTML = '❤️';
+                showMessage('Added to wishlist!', 'wishlist-message');
+            }
+            updateWishlistDisplay();
+        }
+
+
+        // 6. Function to Update the Cart Display
+        function updateCartDisplay() {
+            cartItemsList.innerHTML = '';
+            let total = 0;
+            if (cart.length > 0) {
+                cart.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = `${item.name} - ₹${item.price.toFixed(2)}`;
+                    cartItemsList.appendChild(li);
+                    total += item.price;
+                });
+                proceedBtn.style.display = 'block';
+            } else {
+                 const li = document.createElement('li');
+                li.textContent = 'Your cart is empty.';
+                cartItemsList.appendChild(li);
+                proceedBtn.style.display = 'none';
+            }
+            cartTotalDisplay.textContent = `Total: ₹${total.toFixed(2)}`;
+            cartCountDisplay.textContent = cart.length;
+        }
+        
+        // 7. Function to Update the Wishlist Display
+        function updateWishlistDisplay() {
+            wishlistItemsList.innerHTML = '';
+            if (wishlist.length > 0) {
+                wishlist.forEach(productId => {
+                    const product = products.find(p => p.id === productId);
+                    if (product) {
+                        const li = document.createElement('li');
+                        li.textContent = `${product.name} - ₹${product.price.toFixed(2)}`;
+                        wishlistItemsList.appendChild(li);
+                    }
+                });
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'Your wishlist is empty.';
+                wishlistItemsList.appendChild(li);
+            }
+            wishlistCountDisplay.textContent = wishlist.length;
+        }
+
+        // 8. Functions to Open and Close the Modals
+        function openCart() {
+            // Reset to the first step when opening the cart
+            cartStep1.classList.add('active');
+            cartStep2.classList.remove('active');
+            cartStep3.classList.remove('active');
+            cartModal.style.display = 'flex';
+            updateCartDisplay();
+        }
+
+        function closeCart() {
+            cartModal.style.display = 'none';
+        }
+        
+        function openWishlist() {
+            wishlistModal.style.display = 'flex';
+            updateWishlistDisplay();
+        }
+        
+        function closeWishlist() {
+            wishlistModal.style.display = 'none';
+            wishlistMessageDiv.style.display = 'none';
+        }
+        
+        // New functions for the Product Details Modal
+        function openProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                detailsImage.src = product.image;
+                detailsName.textContent = product.name;
+                detailsPrice.textContent = `₹${product.price.toFixed(2)}`;
+                detailsDescription.textContent = product.description;
+                detailsAddToCartBtn.dataset.productId = productId;
+                detailsBuyNowBtn.dataset.productId = productId;
+                productDetailsModal.style.display = 'flex';
+            }
+        }
+        
+        function closeProductDetails() {
+            productDetailsModal.style.display = 'none';
+        }
+
+
+        // 9. Checkout and Payment Logic
+        function proceedToPayment() {
+            if (cart.length === 0) {
+                // Show a message on the current step if the cart is empty
+                showMessage('Your cart is empty! Please add items to proceed.', 'order-message');
+                return;
+            }
+            // Transition from Step 1 to Step 2
+            cartStep1.classList.remove('active');
+            cartStep2.classList.add('active');
+            // Display the total amount on the payment step
+            paymentTotalDisplay.textContent = cartTotalDisplay.textContent;
+        }
+
+        function checkout(paymentMethod) {
+            let message = '';
+            if (paymentMethod === 'cod') {
+                message = 'Order placed successfully! Please pay cash on delivery.';
+            } else if (paymentMethod === 'online') {
+                message = 'Order placed successfully! Redirecting to payment gateway... (simulated)';
+            }
+            
+            // Show the message on Step 3
+            orderMessageDiv.textContent = message;
+            cartStep2.classList.remove('active');
+            cartStep3.classList.add('active');
+            
+            cart = []; // Clear the cart
+            updateCartDisplay();
+            
+            setTimeout(closeCart, 3000); // Close the modal after 3 seconds
+        }
+        
+        function buyNow(product) {
+            cart = [product];
+            openCart();
+            proceedToPayment(); // Directly move to the payment step
+        }
+
+        // 10. Helper function to show messages
+        function showMessage(message, elementId) {
+            const messageDiv = document.getElementById(elementId);
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 2000);
+        }
+
+        // 11. Event listeners for checkout buttons
+        proceedBtn.addEventListener('click', proceedToPayment);
+        codBtn.addEventListener('click', () => checkout('cod'));
+        onlinePaymentBtn.addEventListener('click', () => checkout('online'));
+
+        // 12. Initial rendering of products when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartDisplay();
+            updateWishlistDisplay();
+        });
+    </script>
+</body>
+</html>
